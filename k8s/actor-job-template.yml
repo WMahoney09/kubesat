@@ -21,6 +21,7 @@ spec:
       containers:
         - name: actor
           image: kubesat:latest
+          imagePullPolicy: IfNotPresent
           command: ["./entrypoint-actor.sh"]
           args: ["ACTOR_ITEM_IDS"]
           envFrom:

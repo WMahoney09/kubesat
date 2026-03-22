@@ -4,6 +4,7 @@
 .env.example
 docs/
 k8s/
+!k8s/actor-job-template.yml
 docker-compose.yml
 README.md
 vision-document.md

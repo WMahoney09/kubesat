@@ -117,7 +117,7 @@ create_actor_job() {
     local args="$1"
 
     sed "s/ACTOR_ITEM_IDS/${args}/" "${JOB_TEMPLATE}" \
-        | kubectl apply -f - 2>/dev/null
+        | kubectl create -f -
 }
 
 run_orbit_no_adapter() {

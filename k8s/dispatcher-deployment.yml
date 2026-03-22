@@ -21,6 +21,7 @@ spec:
       containers:
         - name: dispatcher
           image: kubesat:latest
+          imagePullPolicy: IfNotPresent
           command: ["./entrypoint-dispatcher.sh"]
           envFrom:
             - secretRef:

@@ -58,6 +58,9 @@ COPY --chown=agent:agent adapters/ adapters/
 COPY --chown=agent:agent agent/CLAUDE.md .claude/CLAUDE.md
 COPY --chown=agent:agent agent/settings.json .claude/settings.json
 
+# Copy actor job template (used by Dispatcher in K8s mode)
+COPY --chown=agent:agent k8s/actor-job-template.yml actor-job-template.yml
+
 # Copy entrypoint scripts
 COPY --chown=agent:agent agent/entrypoint-actor.sh entrypoint-actor.sh
 COPY --chown=agent:agent agent/entrypoint-dispatcher.sh entrypoint-dispatcher.sh
