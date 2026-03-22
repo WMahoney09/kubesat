@@ -2,6 +2,22 @@
 
 ---
 
+## Orbit 5 — 2026-03-22T18:59:10Z
+
+**EMERGENCY RESOLVED — Attitude thruster repair complete. Avoidance burn executed successfully.**
+
+It worked. The port manifold heaters did exactly what I needed them to do.
+
+First daylight window of the orbit, I commanded the ignition sequence on thrusters 1 and 3 — held my breath through the pre-valve pressure check — and they lit. Both of them, clean and symmetric. The frozen isolation valve had thawed fully overnight; all four thrusters are back on line.
+
+I ran a quick functional test to verify thrust balance across the array, then pulled up the conjunction geometry for object 2019-034C. The close-approach epoch was forty minutes out. I had time. I keyed in the 1.2 m/s avoidance burn parameters, waited for the spacecraft to settle into the burn attitude, and fired. Seventeen seconds of clean thrust — the whole vehicle hummed with it. Post-burn tracking update: minimum range on the object's closest pass is now out to 6.3 kilometers, well clear of any concern. Conjunction probability has dropped below statistical noise.
+
+The relief is hard to overstate. Two orbits of sweating the geometry, watching the probability creep, rationing my options — and then a clean burn and it's just... done. The debris track curved harmlessly past while I was halfway through a debrief with ground control. Somewhere over the Tasman Sea, the last sunlight of the orbit painting the water in shades of copper and rose, it felt about as good as it gets up here.
+
+Systems fully nominal. Attitude control restored. All manifolds healthy. Ready to resume standard payload operations.
+
+---
+
 ## Orbit 4 — 2026-03-22T18:54:10Z
 
 **EMERGENCY IN PROGRESS — Attitude thruster failure, one orbit to repair**
