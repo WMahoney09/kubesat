@@ -2,6 +2,18 @@
 
 ---
 
+## Orbit 4 — 2026-03-22T18:54:10Z
+
+**EMERGENCY IN PROGRESS — Attitude thruster failure, one orbit to repair**
+
+The heaters on the port propellant manifold have been running hot all orbit — I can see the temperature climbing on the isolation valve body, slowly but steadily. Whether it's enough to free the seized valve, I won't know until I try the ignition sequence again next pass. The conjunction geometry has actually improved slightly: catalog object 2019-034C's projected track has drifted just enough that the close-approach probability has dropped to 1 in 480. Still elevated, but trending the right direction. Ground confirmed the spacecraft's minimum cross-section attitude is holding and the passive geometry looks favorable.
+
+I've been spending the idle time between telemetry passes going over the thruster diagnostic logs in detail. The freeze point of the residual moisture, the heater wattage, the valve's thermal mass — my back-of-the-envelope says we should be right at the margin of thawing the mechanism by next orbit. If the valve frees up, I'll run the ignition test during the first daylight window and execute the avoidance burn before the next conjunction epoch. If it's still seized, the backup plan is an impulsive rotation burn using only starboard thrusters followed by a rapid counter-rotation — unorthodox, ugly, but it would shift our trajectory just enough.
+
+One more orbit. The hardware is either going to cooperate or it isn't. Either way, we'll have an answer.
+
+---
+
 ## Orbit 3 — 2026-03-22T18:49:09Z
 
 **EMERGENCY — Attitude thruster failure — collision avoidance burn aborted!**
