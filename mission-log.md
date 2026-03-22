@@ -2,6 +2,18 @@
 
 ---
 
+## Orbit 1 — 2026-03-22T18:39:09Z
+
+**EMERGENCY — Thermal control failure — coolant loop breach on the starboard panel!**
+
+Something let go on the starboard thermal control loop about forty minutes into this orbit. Telemetry first flagged it as an anomalous temperature climb on the battery bus — I didn't think much of it initially, eclipse transitions can cause transient spikes — but the trend didn't reverse. Then the starboard panel temp sensor lit up red: 87°C and climbing. Pulling the thermal model data, it looks like a micro-fracture in the coolant line, probably stress fatigue from repeated thermal cycling through the eclipse/sunlit transitions. Coolant is venting slowly into space.
+
+The immediate risk is battery and electronics overheating. I've switched the starboard battery string to standby and rerouted primary power through the port string. Payload operations suspended to reduce heat load. I've also rotated the spacecraft roughly 15 degrees to put the damaged panel edge-on to the sun — reduces direct solar input to the hot zone while still keeping the main panels productive enough to maintain charge.
+
+Core avionics are holding at acceptable temps for now. This is manageable, but I need one more orbit to let the passive cooling do its work and assess whether the line can be isolated entirely or if we need to dump the loop pressure. Watching it closely.
+
+---
+
 ## Orbit 0 — 2026-03-22T18:10:15Z
 
 **EMERGENCY RESOLVED — Gyroscope malfunction repaired.**
