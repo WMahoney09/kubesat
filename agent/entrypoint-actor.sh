@@ -23,8 +23,7 @@ if [ ! -f "${MISSION_FILE}" ]; then
 fi
 MISSION=$(cat "${MISSION_FILE}")
 
-# Set up GitHub CLI auth
-echo "${GITHUB_TOKEN}" | gh auth login --with-token 2>/dev/null
+# GitHub CLI uses GITHUB_TOKEN from the environment automatically — no login needed.
 
 # Configure git identity
 git config --global user.name "${GIT_USER_NAME:-KubeSAT Actor}"

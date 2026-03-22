@@ -24,8 +24,7 @@ set -euo pipefail
 : "${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}"
 : "${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
 
-# Set up GitHub CLI auth
-echo "${GITHUB_TOKEN}" | gh auth login --with-token 2>/dev/null
+# GitHub CLI uses GITHUB_TOKEN from the environment automatically — no login needed.
 
 # Configure git identity
 git config --global user.name "${GIT_USER_NAME:-KubeSAT Dispatcher}"

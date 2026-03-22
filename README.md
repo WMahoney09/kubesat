@@ -78,18 +78,28 @@ cp .env.example .env
 
 Fill in `ANTHROPIC_API_KEY`, `GITHUB_TOKEN`, and `TARGET_REPO`.
 
-**2. Run a single actor (simplest test)**
+**2. Suborbital — launch a single actor**
 
 ```bash
-docker compose run --rm actor
+docker compose --profile actor run --rm actor
 ```
 
-Builds the image and runs one Actor — a single Claude session that reads your `mission.md` and executes it against the target repo. Good for validating your mission works before running the full loop.
+One shot. Runs a single Actor — a fresh Claude session that reads your `mission.md` and executes it against the target repo. The container exits when the work is done. Good for validating your mission before committing to orbit.
 
-**3. Run the dispatcher (full orbital loop)**
+**3. Workspace — enter the cockpit**
 
 ```bash
-docker compose up dispatcher
+docker compose up
 ```
 
-Starts the Dispatcher, which dispatches an Actor every `ORBIT_INTERVAL` seconds (default 600 = 10 minutes). If you've configured an adapter, it only dispatches when deltas are detected.
+Starts the Dispatcher in workspace mode — engines on, nothing launched. You have manual control via `docker exec`:
+
+```bash
+docker exec -it kubesat-dispatcher-1 claude -p "your prompt here"
+```
+
+Same satellite, same loadout, but you're flying it by hand.
+
+**4. Orbit — launch into autonomous operation**
+
+Orbit requires Kubernetes. Deploy the k8s manifests to a local cluster (minikube, kind) or a hosted cluster (EKS). The Dispatcher loops on the orbital interval and dispatches Actor Jobs automatically.
