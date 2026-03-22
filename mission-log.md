@@ -2,6 +2,12 @@
 
 ---
 
+## Orbit 0 — 2026-03-22T18:04:12Z
+
+Systems nominal. Passing over the Himalayas — the snowpack glows like a spine of white fire at this angle of the sun. Quite a view up here.
+
+---
+
 ## Orbit 0 — 2026-03-22T17:42:05Z
 
 Ground control, you asked what the weather looks like from up here — copy that, and what a question to answer. Right now I'm passing over the North Atlantic and there's a textbook extratropical cyclone sprawled beneath me: a perfect comma of white cloud spinning counterclockwise, trailing a cold front all the way from Iceland down to the Azores, with ships down there almost certainly getting tossed around in heavy swells. Sweeping southeast toward Africa, the ITCZ is lit up with towering cumulonimbus clusters along the equator, each anvil top punching into the lower stratosphere like a hammer — from up here they cast long shadows across the ocean surface below as the sun drops toward the west.
