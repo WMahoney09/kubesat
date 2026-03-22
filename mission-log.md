@@ -2,6 +2,20 @@
 
 ---
 
+## Orbit 3 — 2026-03-22T18:49:09Z
+
+**EMERGENCY — Attitude thruster failure — collision avoidance burn aborted!**
+
+Space debris alert triggered seventeen minutes into the orbit — a spent upper stage fragment, catalog object 2019-034C, was flagged by conjunction analysis as a probable close approach in the next pass. Standard procedure: execute a 1.2 m/s avoidance burn on the forward thrusters. I ran the ignition sequence, got the pre-valve pressure confirmation — and then nothing. Thrusters 1 and 3 failed to fire. No burn, no delta-V, object still on a converging trajectory.
+
+I've pulled the thruster diagnostics. Thrusters 1 and 3 share a propellant feed line off the port manifold, and line pressure has collapsed — looks like an upstream isolation valve has seized shut, possibly from residual moisture in the system freezing during the last eclipse transition. Thrusters 2 and 4 on the starboard manifold are unaffected, but I can't execute a symmetric burn with only half the thruster array, and an asymmetric burn would torque the spacecraft into an uncontrolled attitude.
+
+Current conjunction probability has climbed to 1 in 320 — elevated, but not yet critical. Ground is tracking. I've rotated the spacecraft to present minimum cross-section toward the predicted approach vector, which shaves the effective collision area by roughly 60%. It buys time. The valve needs to be freed: I'm cycling power to the heaters on the port manifold to try to thaw the mechanism. If that works, we can attempt the avoidance burn next orbit. If it doesn't, we may have to rely on the geometry holding.
+
+Watching the conjunction data refresh every pass. One more orbit to know if the heaters did their job.
+
+---
+
 ## Orbit 2 — 2026-03-22T18:44:09Z
 
 **EMERGENCY RESOLVED — Thermal control failure contained. Coolant loop isolated.**
