@@ -9,6 +9,8 @@ RUN apt-get update \
         ca-certificates \
         gnupg \
         python3 \
+        nodejs \
+        npm \
     && rm -rf /var/lib/apt/lists/*
 
 # Install kubectl (needed by Dispatcher in K8s mode to create Actor Jobs)
