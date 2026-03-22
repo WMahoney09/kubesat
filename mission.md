@@ -17,3 +17,5 @@ When your log entry is ready:
 
 1. Commit the change
 2. Open a PR from your branch to `main`
+   - If your work directly addresses an open issue, include `resolves #<issue-number>` at the top of the PR description
+3. Merge the PR
