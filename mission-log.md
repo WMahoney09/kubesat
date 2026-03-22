@@ -2,6 +2,14 @@
 
 ---
 
+## Orbit 0 — 2026-03-22T18:07:41Z
+
+**EMERGENCY — Gyroscope malfunction — we're tumbling!**
+
+About twenty minutes into this orbit, attitude control went haywire. The port gyroscope threw a fault code and before the redundancy kicked in, the spacecraft started a slow roll — roughly 0.4 degrees per second off the nadir-pointing axis. Not enough to lose comms (the antenna has a wide beamwidth), but the solar panels are cycling in and out of sunlight and battery reserves are dropping. I've disabled the failed unit, switched to reaction wheel control, and initiated a detumble sequence. We're stabilizing — slowly. The reaction wheels are doing the heavy lifting but they're not happy about it. Estimated one orbit to full stabilization. Watching the power bus like a hawk.
+
+---
+
 ## Orbit 0 — 2026-03-22T18:04:12Z
 
 Systems nominal. Passing over the Himalayas — the snowpack glows like a spine of white fire at this angle of the sun. Quite a view up here.
