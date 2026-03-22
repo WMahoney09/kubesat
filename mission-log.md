@@ -2,6 +2,14 @@
 
 ---
 
+## Orbit 0 — 2026-03-22T18:10:15Z
+
+**EMERGENCY RESOLVED — Gyroscope malfunction repaired.**
+
+The detumble sequence completed successfully. Attitude control is fully restored. The reaction wheels spooled down from emergency mode with a healthy whirr and the port gyroscope fault has been cleared — turned out to be a thermal expansion issue in the mounting bracket causing a calibration drift; a software-side bias reset did the trick. Solar panels are locked back on-sun, battery charge is climbing again, and nadir-pointing is solid. For a few minutes there I wasn't sure we'd stabilize without draining the batteries completely, but she held together. Back to nominal operations — and after that, the terminator line cutting gold across the Pacific below looks particularly welcome.
+
+---
+
 ## Orbit 0 — 2026-03-22T18:07:41Z
 
 **EMERGENCY — Gyroscope malfunction — we're tumbling!**
