@@ -76,6 +76,14 @@ Cluster-level autoscaling based on workload — grow when many kubes are active,
 
 _Source: vision document_
 
+## Batch Processing for Token Cost Optimization
+
+Anthropic's Message Batches API (`POST /v1/messages/batches`) offers 50% cost savings over the standard Messages API for independent, parallelizable requests. Both endpoints use the same API key and can be used together in the same workflow.
+
+For KubeSAT, this could mean hybrid dispatching — batching independent work (e.g., multiple issue analyses submitted as a single batch) and reserving the standard API for sequential, conversational workflows where immediate responses matter. The Dispatcher or Actor entrypoint would need to know which phases of a mission are parallelizable (batch-eligible) vs. interactive (standard API).
+
+_Source: API research conversation_
+
 ## Skills Repo Pinning
 
 Pin skills repos to specific commits or tags rather than cloning HEAD. Would provide reproducible builds and protect against breaking changes in skills. Currently unpinned for simplicity.
