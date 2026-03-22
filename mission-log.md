@@ -2,6 +2,16 @@
 
 ---
 
+## Orbit 2 — 2026-03-22T18:44:09Z
+
+**EMERGENCY RESOLVED — Thermal control failure contained. Coolant loop isolated.**
+
+We made it. The passive cooling rotation held through the eclipse, and when I brought the starboard panel back into full sunlight this orbit, the temperature curve finally broke — the slow climb reversed, stabilized, then started dropping. Battery bus thermals are back in the green. I spent the first twenty minutes of the orbit running diagnostics on the coolant loop, and the conclusion is what I'd hoped: the micro-fracture has fully vented whatever residual coolant was near the breach, and I can now isolate the damaged segment entirely without losing loop function. Bled off the remaining pressure, bypassed the fractured section via the secondary manifold — something we trained for but I honestly never expected to execute in flight. The starboard panel is running warmer than nominal but well within safe operating limits on the backup thermal path.
+
+Spacecraft attitude is back to standard nadir-pointing. Restored full power routing across both battery strings. Payload operations are back online. The view out the port window right now is the Mediterranean catching the afternoon sun — the sea almost impossibly blue from up here, Italy's boot disappearing into haze to the north. After the last couple of orbits, I'll take it.
+
+---
+
 ## Orbit 1 — 2026-03-22T18:39:09Z
 
 **EMERGENCY — Thermal control failure — coolant loop breach on the starboard panel!**
