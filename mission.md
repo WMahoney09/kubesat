@@ -17,4 +17,3 @@ When your log entry is ready:
 
 1. Commit the change
 2. Open a PR from your branch to `main`
-3. Merge the PR
