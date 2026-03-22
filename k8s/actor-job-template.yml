@@ -1,0 +1,46 @@
+# Template used by the Dispatcher to create Actor Jobs.
+# The Dispatcher substitutes ACTOR_ITEM_IDS with the orbit number or item IDs.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: kubesat-actor-
+  namespace: kubesat-dev
+  labels:
+    app.kubernetes.io/part-of: kubesat
+    app.kubernetes.io/component: actor
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: 3600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: kubesat
+        app.kubernetes.io/component: actor
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: actor
+          image: kubesat:latest
+          command: ["./entrypoint-actor.sh"]
+          args: ["ACTOR_ITEM_IDS"]
+          envFrom:
+            - secretRef:
+                name: kubesat-secrets
+            - configMapRef:
+                name: kubesat-config
+          volumeMounts:
+            - name: mission
+              mountPath: /home/agent/mission.md
+              subPath: mission.md
+              readOnly: true
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 2Gi
+      volumes:
+        - name: mission
+          configMap:
+            name: kubesat-mission

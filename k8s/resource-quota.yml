@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: kubesat-quota
+  namespace: kubesat-dev
+  labels:
+    app.kubernetes.io/part-of: kubesat
+spec:
+  hard:
+    # Limit total CPU and memory across all pods in the namespace
+    requests.cpu: "8"
+    requests.memory: 16Gi
+    limits.cpu: "16"
+    limits.memory: 32Gi
+    # Limit number of active pods (1 dispatcher + N actors)
+    pods: "10"
+    # Limit number of active Jobs (actors)
+    count/jobs.batch: "5"

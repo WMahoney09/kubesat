@@ -1,0 +1,14 @@
+# Template — replace the mission content with your actual mission.
+# The mission is mounted as a file at /home/agent/mission.md in both
+# the Dispatcher and Actor containers.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubesat-mission
+  namespace: kubesat-dev
+  labels:
+    app.kubernetes.io/part-of: kubesat
+data:
+  mission.md: |
+    Your mission goes here. This is natural language — tell the agent
+    what to do each orbit.

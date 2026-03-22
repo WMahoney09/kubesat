@@ -1,0 +1,33 @@
+services:
+  dispatcher:
+    build: .
+    entrypoint: ["./entrypoint-dispatcher.sh"]
+    env_file: .env
+    volumes:
+      - orbit-state:/home/agent/orbit-state
+      - ./mission.md:/home/agent/mission.md:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4g
+          pids: 256
+    restart: unless-stopped
+
+  actor:
+    build: .
+    entrypoint: ["./entrypoint-actor.sh"]
+    env_file: .env
+    volumes:
+      - ./mission.md:/home/agent/mission.md:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 4g
+          pids: 256
+    profiles:
+      - actor
+
+volumes:
+  orbit-state:

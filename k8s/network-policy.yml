@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kubesat-egress-only
+  namespace: kubesat-dev
+  labels:
+    app.kubernetes.io/part-of: kubesat
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: kubesat
+  policyTypes:
+    - Ingress
+    - Egress
+  # No ingress rules — all inbound traffic denied
+  ingress: []
+  # Egress: allow only the APIs agents need
+  egress:
+    # DNS resolution
+    - to: []
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # HTTPS to external APIs (GitHub, Anthropic, adapter-specific, etc.)
+    - to: []
+      ports:
+        - port: 443
+          protocol: TCP
+    # HTTP (for redirects)
+    - to: []
+      ports:
+        - port: 80
+          protocol: TCP

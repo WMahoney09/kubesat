@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubesat-config
+  namespace: kubesat-dev
+  labels:
+    app.kubernetes.io/part-of: kubesat
+data:
+  TARGET_REPO: ""
+  ORBIT_INTERVAL: "600"
+  BRANCH_CONVENTION: "kubesat/<orbit-timestamp>/<short-slug>"
+  # Optional: set to enable adapter-mode delta detection (e.g., github-issues)
+  # KUBESAT_ADAPTER: ""
+  # ADAPTER_REPO: ""
