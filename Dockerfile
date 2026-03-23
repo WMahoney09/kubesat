@@ -43,11 +43,17 @@ ARG SKILLS_REPOS=""
 RUN --mount=type=secret,id=gh_token \
     mkdir -p .claude/skills \
     && if [ -n "${SKILLS_REPOS}" ]; then \
+        TOKEN=$(cat /run/secrets/gh_token 2>/dev/null || echo ""); \
         echo "${SKILLS_REPOS}" | while IFS= read -r repo_url; do \
             [ -z "${repo_url}" ] && continue; \
             repo_name=$(basename "${repo_url}" .git); \
-            git clone "https://$(cat /run/secrets/gh_token)@${repo_url#https://}" \
-                ".claude/skills/${repo_name}"; \
+            if [ -n "${TOKEN}" ]; then \
+                git clone "https://${TOKEN}@${repo_url#https://}" \
+                    ".claude/skills/${repo_name}"; \
+            else \
+                git clone "${repo_url}" \
+                    ".claude/skills/${repo_name}"; \
+            fi; \
         done; \
     fi
 
