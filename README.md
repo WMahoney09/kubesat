@@ -148,6 +148,17 @@ kubectl get pods -n kubesat-dev
 kubectl logs -f -n kubesat-dev <dispatcher-pod-name>
 ```
 
+**Retask — change the mission mid-flight:**
+
+```bash
+kubectl create configmap kubesat-mission \
+  --namespace=kubesat-dev \
+  --from-file=mission.md=mission.md \
+  --dry-run=client -o yaml | kubectl apply -f -
+```
+
+The new mission takes effect on the next orbit — no restart needed. The mission is mounted as a volume, so the next Actor Job picks up the updated ConfigMap automatically.
+
 **Re-entry:**
 
 ```bash
