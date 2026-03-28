@@ -1,5 +1,4 @@
 # KubeSAT
-## :construction: work-in-progress :construction:
 
 ```
 ░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓█████████████       *     ·
