@@ -1,4 +1,5 @@
-# KubeSAT :construction: work-in-progress :construction:
+# KubeSAT
+## :construction: work-in-progress :construction:
 
 ```
 ░░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓█████████████       *     ·
@@ -65,6 +66,8 @@ A kube is defined by what you load onto it:
 | **Secrets** | Depends   | API keys, tokens for whatever you connect it to |
 
 The simplest kube is just a mission. Claude's built-in capabilities handle the rest.
+
+_**A KubeSAT is only as good as it's loadout, for evolving a loadout that you trust, checkout [Sandbox Derby](https://github.com/WMahoney09/sandbox-derby/blob/main/README.md#sandbox-derby)**_
 
 ---
 
