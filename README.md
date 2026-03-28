@@ -61,6 +61,7 @@ A kube is defined by what you load onto it:
 | ----------- | --------- | ----------------------------------------------- |
 | **Mission** | Yes       | Natural language instructions (`mission.md`)    |
 | **Adapter** | No        | Pluggable source polling for delta detection    |
+| **Agents** | No        | BYO agent definitions for specialized workflows  |
 | **Skills**  | No        | BYO skill repos for specialized capabilities    |
 | **Secrets** | Depends   | API keys, tokens for whatever you connect it to |
 
