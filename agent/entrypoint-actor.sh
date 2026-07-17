@@ -11,7 +11,12 @@ set -euo pipefail
 ORBIT_NUM="${1:-0}"
 
 # Validate required environment variables
-: "${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}"
+# Fuel: API billing (ANTHROPIC_API_KEY) or subscription billing (CLAUDE_CODE_OAUTH_TOKEN
+# from `claude setup-token`). Exactly one source is required.
+if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+    echo "ERROR: No fuel — set ANTHROPIC_API_KEY (API billing) or CLAUDE_CODE_OAUTH_TOKEN (subscription billing)"
+    exit 1
+fi
 : "${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
 
 # Read the mission

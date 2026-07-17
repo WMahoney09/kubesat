@@ -76,7 +76,10 @@ The simplest kube is just a mission. Claude's built-in capabilities handle the r
 cp .env.example .env
 ```
 
-Fill in `ANTHROPIC_API_KEY`, `GITHUB_TOKEN`, and `TARGET_REPO`.
+Fill in your fuel, `GITHUB_TOKEN`, and `TARGET_REPO`. Fuel is either
+`ANTHROPIC_API_KEY` (API billing, metered) or `CLAUDE_CODE_OAUTH_TOKEN`
+(subscription billing — generate one with `claude setup-token` on a Pro/Max
+plan). Exactly one fuel source is required.
 
 **2. Suborbital — launch a single actor**
 
