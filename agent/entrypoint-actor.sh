@@ -11,16 +11,7 @@ set -euo pipefail
 ORBIT_NUM="${1:-0}"
 
 # Validate required environment variables
-# Fuel: API billing (ANTHROPIC_API_KEY) or subscription billing (CLAUDE_CODE_OAUTH_TOKEN
-# from `claude setup-token`). Exactly one source — mixed fuel makes billing ambiguous.
-if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
-    echo "ERROR: No fuel — set ANTHROPIC_API_KEY (API billing) or CLAUDE_CODE_OAUTH_TOKEN (subscription billing)"
-    exit 1
-fi
-if [ -n "${ANTHROPIC_API_KEY:-}" ] && [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
-    echo "ERROR: Two fuel sources — set exactly one of ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN so it is unambiguous how this satellite is billed"
-    exit 1
-fi
+source "$(dirname "$0")/check-fuel.sh"
 : "${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
 
 # Read the mission

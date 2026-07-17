@@ -21,16 +21,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 
 # Validate required environment variables
-# Fuel: API billing (ANTHROPIC_API_KEY) or subscription billing (CLAUDE_CODE_OAUTH_TOKEN
-# from `claude setup-token`). Exactly one source — mixed fuel makes billing ambiguous.
-if [ -z "${ANTHROPIC_API_KEY:-}" ] && [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
-    echo "ERROR: No fuel — set ANTHROPIC_API_KEY (API billing) or CLAUDE_CODE_OAUTH_TOKEN (subscription billing)"
-    exit 1
-fi
-if [ -n "${ANTHROPIC_API_KEY:-}" ] && [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
-    echo "ERROR: Two fuel sources — set exactly one of ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN so it is unambiguous how this satellite is billed"
-    exit 1
-fi
+source "$(dirname "$0")/check-fuel.sh"
 : "${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
 
 # GitHub CLI uses GITHUB_TOKEN from the environment automatically — no login needed.
@@ -209,6 +200,16 @@ if [ -f "${K8S_TOKEN}" ]; then
     if [ -f "/home/agent/k8s/actor-job-template.yml" ]; then
         cp /home/agent/k8s/actor-job-template.yml "${JOB_TEMPLATE}"
     fi
+
+    # Default the Actor image to the image THIS Dispatcher is running, so a
+    # satellite's Actors always match its own build — no separate knob to keep
+    # in sync. ACTOR_IMAGE (from config) overrides this only to intentionally
+    # launch Actors on a different image.
+    if [ -z "${ACTOR_IMAGE:-}" ]; then
+        ACTOR_IMAGE=$(kubectl get pod "${POD_NAME:-$(hostname)}" -n "${NAMESPACE:-kubesat-dev}" \
+            -o jsonpath='{.spec.containers[0].image}' 2>/dev/null || true)
+    fi
+    echo "Actor image: ${ACTOR_IMAGE:-kubesat:latest}"
 
     if [ "${ADAPTER_MODE}" = "true" ]; then
         init_orbit_log

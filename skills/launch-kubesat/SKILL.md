@@ -28,6 +28,8 @@ use `kubesat-dev` and `kubesat:latest`; every launch substitutes its own
 namespace and builds its own image tag (`kubesat:<satellite-name>`) so a
 constellation can coexist — skills loadouts are baked into the image, and a
 shared tag would let one launch silently change another satellite's loadout.
+The Dispatcher launches its Actors with its *own* image by default, so setting
+the Dispatcher's image is the only place the per-satellite tag has to appear.
 
 ## Flight plan
 
@@ -131,9 +133,10 @@ Create `~/.kubesat/<satellite-name>/` containing:
    runtime, so a copy here would be edited in vain; Actor resource tweaks
    belong in the template before `docker build`).
 3. **`configmap.yml`** — edit the copied one: set `TARGET_REPO`,
-   `ORBIT_INTERVAL`, `ACTOR_IMAGE: "kubesat:<satellite-name>"` (the
-   Dispatcher launches Actor Jobs with this image), and, if an adapter was
-   chosen, `KUBESAT_ADAPTER` and `ADAPTER_REPO`.
+   `ORBIT_INTERVAL`, and, if an adapter was chosen, `KUBESAT_ADAPTER` and
+   `ADAPTER_REPO`. Leave `ACTOR_IMAGE` unset — the Dispatcher defaults it to
+   its own image, so Actors match the build set in `dispatcher-deployment.yml`.
+   Set `ACTOR_IMAGE` only to intentionally run Actors on a different image.
 4. **`launch.env`** — secrets only, with placeholder values:
 
    ```
@@ -218,9 +221,6 @@ satellite's name, namespace, orbital period, fuel type, and how to watch it.
 
 ## Flight operations
 
-**Status** — `kubectl get jobs -n <ns>` for orbit history,
-`kubectl logs -n <ns> job/<job-name>` for what an Actor did.
-
 **Retask** (change mission mid-flight — takes effect next orbit, no restart):
 
 ```
@@ -228,9 +228,11 @@ kubectl create configmap kubesat-mission --namespace=<ns> --from-file=mission.md
 kubectl apply -f mission-configmap.gen.yml
 ```
 
-**Pause** — `kubectl scale deployment/kubesat-dispatcher -n <ns> --replicas=0`
-(resume with `--replicas=1`).
+**Status, pause, resume, and deorbit** are handled by sibling skills so each
+operation lives in one place:
 
-**Re-entry (deorbit)** — `kubectl delete namespace <ns>` removes the whole
-satellite. Destructive; confirm with the user first. To keep the loadout for
-a future relaunch, that's exactly what `~/.kubesat/<name>/` is for.
+- **`status-kubesat`** — dispatcher health, orbit history, active mission,
+  fuel type (read-only).
+- **`deorbit-kubesat`** — pause (scale to zero), resume, or permanently
+  deorbit (delete the namespace). The loadout under `~/.kubesat/<name>/`
+  survives a deorbit, so a satellite can always be relaunched from here.

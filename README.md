@@ -86,8 +86,15 @@ The `launch-kubesat` skill interviews you for the mission parameters —
 orbital period, fuel (billing), adapter, skills loadout — drafts the
 `mission.md` for sign-off, assembles a per-satellite loadout under
 `~/.kubesat/<name>/`, and runs the launch sequence below on your behalf.
-It also handles retask, status checks, and re-entry for satellites already
-in orbit.
+
+Companion skills cover the rest of the flight lifecycle:
+
+- **`status-kubesat`** — check on satellites already in orbit: dispatcher
+  health, recent orbits, active mission, fuel type. Read-only.
+- **`deorbit-kubesat`** — pause, resume, or permanently deorbit a satellite.
+
+Just ask conversationally ("is my kubesat still flying?", "pause the acme
+satellite") and the matching skill triggers.
 
 ---
 

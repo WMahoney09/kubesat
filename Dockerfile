@@ -67,9 +67,10 @@ COPY --chown=agent:agent agent/settings.json .claude/settings.json
 # Copy actor job template (used by Dispatcher in K8s mode)
 COPY --chown=agent:agent k8s/actor-job-template.yml actor-job-template.yml
 
-# Copy entrypoint scripts
+# Copy entrypoint scripts (check-fuel.sh is sourced by both, not executed)
 COPY --chown=agent:agent agent/entrypoint-actor.sh entrypoint-actor.sh
 COPY --chown=agent:agent agent/entrypoint-dispatcher.sh entrypoint-dispatcher.sh
+COPY --chown=agent:agent agent/check-fuel.sh check-fuel.sh
 RUN chmod +x entrypoint-actor.sh entrypoint-dispatcher.sh
 
 # Default to Actor role (overridden by Compose/K8s for Dispatcher)
