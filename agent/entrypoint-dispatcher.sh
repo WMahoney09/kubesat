@@ -121,7 +121,11 @@ has_active_actor() {
 create_actor_job() {
     local args="$1"
 
-    sed "s/ACTOR_ITEM_IDS/${args}/" "${JOB_TEMPLATE}" \
+    # NAMESPACE is injected via the downward API so the baked-in template
+    # follows the satellite into whatever namespace it was launched in.
+    sed -e "s/ACTOR_ITEM_IDS/${args}/" \
+        -e "s/namespace: kubesat-dev/namespace: ${NAMESPACE:-kubesat-dev}/" \
+        "${JOB_TEMPLATE}" \
         | kubectl create -f -
 }
 
