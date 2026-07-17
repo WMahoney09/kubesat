@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# KubeSAT base — the single source of truth for a satellite's static
+# resources. A per-satellite launch references this base and overrides the
+# namespace and image tag from an overlay (see skills/launch-kubesat).
+#
+# Adding or renaming a manifest is a one-line edit HERE, next to the file —
+# no skill or README change required.
+
+namespace: kubesat-dev
+
+resources:
+  - namespace.yml
+  - rbac.yml
+  - configmap.yml
+  - dispatcher-deployment.yml
+  - network-policy.yml
+  - orbit-pvc.yml
+  - resource-quota.yml
+
+# The Dispatcher runs this image; a launch overlay bumps `newTag` to the
+# satellite's build. Actors self-derive their image from the Dispatcher, so
+# the tag only has to be set in this one place.
+images:
+  - name: kubesat
+    newTag: latest
