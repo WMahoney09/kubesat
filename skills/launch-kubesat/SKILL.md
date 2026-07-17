@@ -23,8 +23,11 @@ This plugin's root (`${CLAUDE_PLUGIN_ROOT}`) is a full checkout of the KubeSAT
 repo: `Dockerfile`, `k8s/` manifests, `adapters/`, entrypoints. Everything
 needed to launch ships with the plugin.
 
-**One satellite per namespace.** The stock manifests use `kubesat-dev`; every
-launch substitutes its own namespace so a constellation can coexist.
+**One satellite per namespace, one image per satellite.** The stock manifests
+use `kubesat-dev` and `kubesat:latest`; every launch substitutes its own
+namespace and builds its own image tag (`kubesat:<satellite-name>`) so a
+constellation can coexist — skills loadouts are baked into the image, and a
+shared tag would let one launch silently change another satellite's loadout.
 
 ## Flight plan
 
@@ -120,11 +123,17 @@ Create `~/.kubesat/<satellite-name>/` containing:
 2. **All manifests** copied from `${CLAUDE_PLUGIN_ROOT}/k8s/`, with every
    occurrence of `kubesat-dev` replaced by the satellite's namespace
    (it appears in `metadata.namespace`, the Namespace name, and RBAC
-   subjects). Skip `secrets.yml` (it's a template; real secrets come from
-   the env file) and `mission-configmap.yml` (created from `mission.md`).
+   subjects). In `dispatcher-deployment.yml`, also set
+   `image: kubesat:<satellite-name>`. Skip `secrets.yml` (it's a template;
+   real secrets come from the env file), `mission-configmap.yml` (created
+   from `mission.md`), and `actor-job-template.yml` (baked into the image
+   at build time — the Dispatcher rewrites its namespace and image at
+   runtime, so a copy here would be edited in vain; Actor resource tweaks
+   belong in the template before `docker build`).
 3. **`configmap.yml`** — edit the copied one: set `TARGET_REPO`,
-   `ORBIT_INTERVAL`, and, if an adapter was chosen, `KUBESAT_ADAPTER` and
-   `ADAPTER_REPO`.
+   `ORBIT_INTERVAL`, `ACTOR_IMAGE: "kubesat:<satellite-name>"` (the
+   Dispatcher launches Actor Jobs with this image), and, if an adapter was
+   chosen, `KUBESAT_ADAPTER` and `ADAPTER_REPO`.
 4. **`launch.env`** — secrets only, with placeholder values:
 
    ```
@@ -143,9 +152,13 @@ Create `~/.kubesat/<satellite-name>/` containing:
 The user fills in `launch.env` themselves. **Never ask the user to paste
 secrets into the conversation, and never read the filled-in file back.**
 Suggest they run `! $EDITOR ~/.kubesat/<satellite-name>/launch.env` (the `!`
-prefix runs it in-session). To verify readiness without exposing values,
-check that no line ends in `=` for the required keys, e.g.
-`grep -c "^GITHUB_TOKEN=..*" launch.env`.
+prefix runs it in-session). Have them **delete the unused fuel line** rather
+than leaving it empty — the file becomes the k8s Secret verbatim, and an
+empty `ANTHROPIC_API_KEY=` ships an empty env var into every pod. To verify
+readiness without exposing values, count non-empty lines per key
+(`grep -c "^GITHUB_TOKEN=..*" launch.env`): `GITHUB_TOKEN` must be filled,
+and **exactly one** of the two fuel keys — the entrypoints refuse to fly
+with zero or two fuel sources, so billing is never ambiguous.
 
 ## Step 5 — Preflight checks
 
@@ -159,10 +172,12 @@ check that no line ends in `=` for the required keys, e.g.
   satellite is already flying, the user probably wants **retask** (below),
   not a second launch.
 - **Suborbital test (recommended)** — one shot, no Kubernetes, validates
-  mission + fuel before committing to orbit:
+  mission + fuel before committing to orbit. Requires the image, so run the
+  `docker build` from the launch sequence first (a relaunch later hits the
+  layer cache):
 
   ```
-  docker run --rm --env-file ~/.kubesat/<name>/launch.env --env TARGET_REPO=<url> -v ~/.kubesat/<name>/mission.md:/home/agent/mission.md:ro kubesat:latest
+  docker run --rm --env-file ~/.kubesat/<name>/launch.env --env TARGET_REPO=<url> -v ~/.kubesat/<name>/mission.md:/home/agent/mission.md:ro kubesat:<satellite-name>
   ```
 
   Review what the Actor did (branches, PRs, comments) with the user before
@@ -173,7 +188,7 @@ check that no line ends in `=` for the required keys, e.g.
 Run from `~/.kubesat/<satellite-name>/`, one command per step:
 
 ```
-docker build -t kubesat:latest <plugin-root>
+docker build -t kubesat:<satellite-name> <plugin-root>
 ```
 
 (with skills: add `--build-arg SKILLS_REPOS=$'url1\nurl2'`; private skill

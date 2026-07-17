@@ -9,6 +9,9 @@ data:
   TARGET_REPO: ""
   ORBIT_INTERVAL: "300"
   BRANCH_CONVENTION: "kubesat/<orbit-timestamp>/<short-slug>"
+  # Image the Dispatcher launches Actor Jobs with. Set per satellite
+  # (e.g. kubesat:<satellite-name>) so constellations don't share a tag.
+  # ACTOR_IMAGE: "kubesat:latest"
   # Optional: set to enable adapter-mode delta detection (e.g., github-issues)
   # KUBESAT_ADAPTER: ""
   # ADAPTER_REPO: ""

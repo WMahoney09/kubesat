@@ -11,6 +11,8 @@ metadata:
 spec:
   backoffLimit: 1
   activeDeadlineSeconds: 3600
+  # Keep a day of orbit history for status checks, then self-clean
+  ttlSecondsAfterFinished: 86400
   template:
     metadata:
       labels:
