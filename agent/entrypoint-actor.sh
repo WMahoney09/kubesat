@@ -11,7 +11,7 @@ set -euo pipefail
 ORBIT_NUM="${1:-0}"
 
 # Validate required environment variables
-: "${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}"
+source "$(dirname "$0")/check-fuel.sh"
 : "${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
 
 # Read the mission

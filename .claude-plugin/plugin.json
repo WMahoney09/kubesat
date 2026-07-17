@@ -1,0 +1,9 @@
+{
+  "name": "kubesat",
+  "description": "Mission Control for KubeSAT — launch, retask, monitor, and deorbit autonomous Claude agent satellites from any repo",
+  "version": "0.1.0",
+  "author": {
+    "name": "WMahoney09"
+  },
+  "homepage": "https://github.com/WMahoney09/kubesat"
+}

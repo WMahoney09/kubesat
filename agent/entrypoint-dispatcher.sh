@@ -21,7 +21,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 
 # Validate required environment variables
-: "${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}"
+source "$(dirname "$0")/check-fuel.sh"
 : "${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
 
 # GitHub CLI uses GITHUB_TOKEN from the environment automatically — no login needed.
@@ -105,18 +105,25 @@ with open('${ORBIT_LOG}', 'w') as f:
 # ---------------------------------------------------------------------------
 
 has_active_actor() {
+    # Jobs only support the metadata.name/namespace and status.successful
+    # field selectors, so active jobs must be counted client-side.
     local active
     active=$(kubectl get jobs -n "${NAMESPACE:-kubesat-dev}" \
-        -l app.kubernetes.io/component=actor \
-        --field-selector=status.active=1 \
-        -o name 2>/dev/null | head -1)
-    [ -n "${active}" ]
+        -l app.kubernetes.io/component=actor -o json \
+        | python3 -c "import json,sys; print(sum(1 for i in json.load(sys.stdin)['items'] if (i.get('status',{}).get('active') or 0) > 0))")
+    [ "${active:-0}" -gt 0 ]
 }
 
 create_actor_job() {
     local args="$1"
 
-    sed "s/ACTOR_ITEM_IDS/${args}/" "${JOB_TEMPLATE}" \
+    # NAMESPACE (downward API) and ACTOR_IMAGE (kubesat-config) let the
+    # baked-in template follow the satellite into whatever namespace it was
+    # launched in, running that satellite's own image build.
+    sed -e "s/ACTOR_ITEM_IDS/${args}/" \
+        -e "s/namespace: kubesat-dev/namespace: ${NAMESPACE:-kubesat-dev}/" \
+        -e "s|image: kubesat:latest|image: ${ACTOR_IMAGE:-kubesat:latest}|" \
+        "${JOB_TEMPLATE}" \
         | kubectl create -f -
 }
 
@@ -193,6 +200,16 @@ if [ -f "${K8S_TOKEN}" ]; then
     if [ -f "/home/agent/k8s/actor-job-template.yml" ]; then
         cp /home/agent/k8s/actor-job-template.yml "${JOB_TEMPLATE}"
     fi
+
+    # Default the Actor image to the image THIS Dispatcher is running, so a
+    # satellite's Actors always match its own build — no separate knob to keep
+    # in sync. ACTOR_IMAGE (from config) overrides this only to intentionally
+    # launch Actors on a different image.
+    if [ -z "${ACTOR_IMAGE:-}" ]; then
+        ACTOR_IMAGE=$(kubectl get pod "${POD_NAME:-$(hostname)}" -n "${NAMESPACE:-kubesat-dev}" \
+            -o jsonpath='{.spec.containers[0].image}' 2>/dev/null || true)
+    fi
+    echo "Actor image: ${ACTOR_IMAGE:-kubesat:latest}"
 
     if [ "${ADAPTER_MODE}" = "true" ]; then
         init_orbit_log
