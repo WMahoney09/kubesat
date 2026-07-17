@@ -1,0 +1,13 @@
+{
+  "name": "kubesat",
+  "owner": {
+    "name": "WMahoney09"
+  },
+  "plugins": [
+    {
+      "name": "kubesat",
+      "source": "./",
+      "description": "Mission Control for KubeSAT — launch, retask, monitor, and deorbit autonomous Claude agent satellites from any repo"
+    }
+  ]
+}

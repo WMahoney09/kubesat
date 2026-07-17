@@ -68,6 +68,29 @@ The simplest kube is just a mission. Claude's built-in capabilities handle the r
 
 ---
 
+## Mission Control (Claude Code plugin)
+
+This repo is also a Claude Code plugin. Install it once and you can launch
+satellites from any project, conversationally:
+
+```
+/plugin marketplace add WMahoney09/kubesat
+/plugin install kubesat@kubesat
+```
+
+Then, from whatever repo you want a satellite orbiting:
+
+> "hey claude, launch a kubesat that does PR review for this project"
+
+The `launch-kubesat` skill interviews you for the mission parameters —
+orbital period, fuel (billing), adapter, skills loadout — drafts the
+`mission.md` for sign-off, assembles a per-satellite loadout under
+`~/.kubesat/<name>/`, and runs the launch sequence below on your behalf.
+It also handles retask, status checks, and re-entry for satellites already
+in orbit.
+
+---
+
 ## Getting Started
 
 **1. Configure your environment**
