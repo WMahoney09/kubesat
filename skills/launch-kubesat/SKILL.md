@@ -23,13 +23,16 @@ This plugin's root (`${CLAUDE_PLUGIN_ROOT}`) is a full checkout of the KubeSAT
 repo: `Dockerfile`, `k8s/` manifests, `adapters/`, entrypoints. Everything
 needed to launch ships with the plugin.
 
-**One satellite per namespace, one image per satellite.** The stock manifests
-use `kubesat-dev` and `kubesat:latest`; every launch substitutes its own
-namespace and builds its own image tag (`kubesat:<satellite-name>`) so a
-constellation can coexist — skills loadouts are baked into the image, and a
-shared tag would let one launch silently change another satellite's loadout.
-The Dispatcher launches its Actors with its *own* image by default, so setting
-the Dispatcher's image is the only place the per-satellite tag has to appear.
+**One satellite per namespace, one image per satellite.** The stock `k8s/`
+base uses `kubesat-dev` and `kubesat:latest`; each launch is a thin Kustomize
+overlay over that base that sets its own namespace and image tag
+(`kubesat:<satellite-name>`), so a constellation can coexist without colliding.
+Skills loadouts are baked into the image, and a shared tag would let one launch
+silently change another satellite's loadout — so each satellite gets its own
+tag. The Dispatcher launches its Actors with its *own* image, so the tag only
+has to be set once (the overlay's `images:` entry); the namespace transformer
+rewrites `kubesat-dev` everywhere — including RBAC subjects — with no
+hand-substitution.
 
 ## Flight plan
 
@@ -119,36 +122,75 @@ Show the drafted mission to the user and iterate until they sign off.
 
 ## Step 3 — Assemble the loadout
 
+The loadout is a Kustomize overlay over the plugin's `k8s/` base. The base
+(`${CLAUDE_PLUGIN_ROOT}/k8s/kustomization.yml`) owns the manifest roster and
+RBAC; the overlay carries only what's unique to this satellite — namespace,
+image tag, mission, secrets, config. You never edit or enumerate the base
+manifests, and you never hand-substitute the namespace — the base's
+`namespace:` transformer rewrites it everywhere, RBAC subjects included.
+
 Create `~/.kubesat/<satellite-name>/` containing:
 
-1. **`mission.md`** — the signed-off mission.
-2. **All manifests** copied from `${CLAUDE_PLUGIN_ROOT}/k8s/`, with every
-   occurrence of `kubesat-dev` replaced by the satellite's namespace
-   (it appears in `metadata.namespace`, the Namespace name, and RBAC
-   subjects). In `dispatcher-deployment.yml`, also set
-   `image: kubesat:<satellite-name>`. Skip `secrets.yml` (it's a template;
-   real secrets come from the env file), `mission-configmap.yml` (created
-   from `mission.md`), and `actor-job-template.yml` (baked into the image
-   at build time — the Dispatcher rewrites its namespace and image at
-   runtime, so a copy here would be edited in vain; Actor resource tweaks
-   belong in the template before `docker build`).
-3. **`configmap.yml`** — edit the copied one: set `TARGET_REPO`,
-   `ORBIT_INTERVAL`, and, if an adapter was chosen, `KUBESAT_ADAPTER` and
-   `ADAPTER_REPO`. Leave `ACTOR_IMAGE` unset — the Dispatcher defaults it to
-   its own image, so Actors match the build set in `dispatcher-deployment.yml`.
-   Set `ACTOR_IMAGE` only to intentionally run Actors on a different image.
-4. **`launch.env`** — secrets only, with placeholder values:
+1. **`k8s/`** — a recursive copy of the base:
+   `cp -r ${CLAUDE_PLUGIN_ROOT}/k8s ~/.kubesat/<satellite-name>/k8s`. The copy
+   keeps the loadout self-contained for relaunch and needs no edits; a manifest
+   added upstream is picked up automatically (it's listed in the base's own
+   `kustomization.yml`, not here).
+2. **`mission.md`** — the signed-off mission. The overlay generates the
+   `kubesat-mission` ConfigMap from it.
+3. **`launch.env`** — secrets only, placeholder values (see Step 4). Becomes
+   the `kubesat-secrets` Secret.
+4. **`kustomization.yml`** — the overlay. Set the namespace, the image tag
+   (`<satellite-name>`), the target repo, the orbital period, and — if an
+   adapter was chosen — `KUBESAT_ADAPTER` / `ADAPTER_REPO` in the config patch:
 
+   ```yaml
+   apiVersion: kustomize.config.k8s.io/v1beta1
+   kind: Kustomization
+
+   namespace: <satellite-name>
+
+   resources:
+     - k8s
+
+   images:
+     - name: kubesat
+       newTag: <satellite-name>
+
+   # Stable names — the Dispatcher creates Actor Jobs at runtime that mount
+   # these by fixed name, outside kustomize's reference rewriting.
+   generatorOptions:
+     disableNameSuffixHash: true
+
+   secretGenerator:
+     - name: kubesat-secrets
+       envs:
+         - launch.env
+
+   configMapGenerator:
+     - name: kubesat-mission
+       files:
+         - mission.md=mission.md
+
+   patches:
+     - target:
+         kind: ConfigMap
+         name: kubesat-config
+       patch: |-
+         apiVersion: v1
+         kind: ConfigMap
+         metadata:
+           name: kubesat-config
+         data:
+           TARGET_REPO: <target-repo-url>
+           ORBIT_INTERVAL: "<seconds>"
+           # KUBESAT_ADAPTER: github-issues
+           # ADAPTER_REPO: <owner>/<repo>
    ```
-   # Fuel — exactly one
-   ANTHROPIC_API_KEY=
-   # CLAUDE_CODE_OAUTH_TOKEN=
 
-   # GitHub token — repo + workflow scopes
-   GITHUB_TOKEN=
-   ```
-
-   Keep config out of this file — it becomes the k8s Secret verbatim.
+   Leave `ACTOR_IMAGE` out — the Dispatcher defaults Actors to its own image,
+   which the `images:` transformer already sets. The generators replace
+   `secrets.yml` and `mission-configmap.yml`, so don't add those to the overlay.
 
 ## Step 4 — Fueling (secrets)
 
@@ -167,9 +209,9 @@ with zero or two fuel sources, so billing is never ambiguous.
 
 - `kubectl config current-context` — a cluster must be reachable, and it
   should be **local** (docker-desktop, minikube, kind): the image is built
-  locally as `kubesat:latest` with `imagePullPolicy: IfNotPresent`. A remote
-  cluster needs a registry push, which is outside this skill — warn and stop
-  if the context looks remote.
+  locally as `kubesat:<satellite-name>` with `imagePullPolicy: IfNotPresent`.
+  A remote cluster needs a registry push, which is outside this skill — warn
+  and stop if the context looks remote.
 - `docker version` — the daemon must be up.
 - Namespace not already in use (`kubectl get namespace <ns>`) — if this
   satellite is already flying, the user probably wants **retask** (below),
@@ -188,7 +230,7 @@ with zero or two fuel sources, so billing is never ambiguous.
 
 ## Step 6 — Launch sequence
 
-Run from `~/.kubesat/<satellite-name>/`, one command per step:
+Build the image, then apply the overlay — two commands:
 
 ```
 docker build -t kubesat:<satellite-name> <plugin-root>
@@ -198,16 +240,14 @@ docker build -t kubesat:<satellite-name> <plugin-root>
 repos additionally need `--secret id=gh_token,src=<tokenfile>`)
 
 ```
-kubectl apply -f namespace.yml
-kubectl create secret generic kubesat-secrets --namespace=<ns> --from-env-file=launch.env
-kubectl apply -f configmap.yml
-kubectl create configmap kubesat-mission --namespace=<ns> --from-file=mission.md=mission.md
-kubectl apply -f rbac.yml
-kubectl apply -f orbit-pvc.yml
-kubectl apply -f resource-quota.yml
-kubectl apply -f network-policy.yml
-kubectl apply -f dispatcher-deployment.yml
+kubectl apply -k ~/.kubesat/<satellite-name>/
 ```
+
+One `apply -k` renders the overlay and creates the namespace, RBAC, config,
+secret, mission, storage, quota, network policy, and Dispatcher together.
+Preview exactly what will hit the cluster first with
+`kubectl kustomize ~/.kubesat/<satellite-name>/` (no cluster needed — good for
+a final sanity check on the namespace and image tag).
 
 ## Step 7 — Confirm orbit
 
@@ -222,11 +262,15 @@ satellite's name, namespace, orbital period, fuel type, and how to watch it.
 ## Flight operations
 
 **Retask** (change mission mid-flight — takes effect next orbit, no restart):
+edit `~/.kubesat/<name>/mission.md`, then re-apply the overlay:
 
 ```
-kubectl create configmap kubesat-mission --namespace=<ns> --from-file=mission.md=mission.md --dry-run=client -o yaml > mission-configmap.gen.yml
-kubectl apply -f mission-configmap.gen.yml
+kubectl apply -k ~/.kubesat/<name>/
 ```
+
+Kustomize regenerates the `kubesat-mission` ConfigMap (stable name) with the
+new content, and the next Actor Job mounts it. Everything else re-applies
+idempotently, so this is safe to run repeatedly.
 
 **Status, pause, resume, and deorbit** are handled by sibling skills so each
 operation lives in one place:

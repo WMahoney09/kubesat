@@ -143,7 +143,10 @@ Orbit requires Kubernetes. You can use Docker Desktop's built-in K8s (Settings >
 **Prep the launchpad:**
 
 ```bash
-# Create the namespace
+# Build the image
+docker build -t kubesat:latest .
+
+# Namespace first, so the secret and mission have somewhere to live
 kubectl apply -f k8s/namespace.yml
 
 # Load secrets (comment out non-secret vars in .env first, then restore after)
@@ -151,31 +154,24 @@ kubectl create secret generic kubesat-secrets \
   --namespace=kubesat-dev \
   --from-env-file=.env
 
-# Apply the config (edit k8s/configmap.yml with your TARGET_REPO and ORBIT_INTERVAL first)
-kubectl apply -f k8s/configmap.yml
-
 # Load your mission
 kubectl create configmap kubesat-mission \
   --namespace=kubesat-dev \
   --from-file=mission.md=mission.md
-
-# Apply RBAC, storage, quotas, and network policy
-kubectl apply -f k8s/rbac.yml
-kubectl apply -f k8s/orbit-pvc.yml
-kubectl apply -f k8s/resource-quota.yml
-kubectl apply -f k8s/network-policy.yml
-
-# Build the image
-docker build -t kubesat:latest .
 ```
+
+Edit `k8s/configmap.yml` with your `TARGET_REPO` and `ORBIT_INTERVAL`.
 
 **Launch:**
 
 ```bash
-kubectl apply -f k8s/dispatcher-deployment.yml
+kubectl apply -k k8s/
 ```
 
-The Dispatcher enters its orbital loop and dispatches Actor Jobs on the configured interval.
+`apply -k` renders the `k8s/` Kustomize base — namespace, config, RBAC,
+storage, quota, network policy, and Dispatcher — in one shot. (Preview it with
+`kubectl kustomize k8s/`.) The Dispatcher enters its orbital loop and dispatches
+Actor Jobs on the configured interval.
 
 **Monitor:**
 
